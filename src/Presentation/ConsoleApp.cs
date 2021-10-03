@@ -91,7 +91,7 @@ namespace Presentation
             await ShowAllLodging(cancellationToken);
             Console.WriteLine("\n\nBorrar liquidación");
             int id = ConsoleReader.ReadFormattedData("Ingrese el id: ", Convert.ToInt32);
-            await _lodgingController.DeleteById(id, cancellationToken);
+            await _lodgingController.DeleteById(new DeleteRequest(id), cancellationToken);
             Console.WriteLine("Datos actualizados");
             await ShowAllLodging(cancellationToken);
         }

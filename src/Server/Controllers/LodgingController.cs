@@ -31,9 +31,9 @@ namespace Server.Controllers
             await _lodgingService.AddLodging(MapRequest(lodging), cancellation);
         }
 
-        public async ValueTask DeleteById(int id, CancellationToken cancellationToken)
+        public async ValueTask DeleteById(DeleteRequest deleteRequest, CancellationToken cancellationToken)
         {
-            await _lodgingService.DeleteById(id, cancellationToken);
+            await _lodgingService.DeleteById(deleteRequest.Id, cancellationToken);
         }
 
         private static Lodging MapRequest(LodgingRequest lodgingRequest)

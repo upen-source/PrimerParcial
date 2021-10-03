@@ -15,6 +15,6 @@ namespace SharedLib.Lodging
         ValueTask AddLodging(LodgingRequest lodging, CancellationToken cancellation);
 
         [OperationContract]
-        ValueTask DeleteById(int id, CancellationToken cancellationToken);
+        ValueTask DeleteById(DeleteRequest deleteRequest, CancellationToken cancellationToken);
     }
 }
