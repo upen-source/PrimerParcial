@@ -1,33 +1,19 @@
-using System.Globalization;
-using Data;
-using Data.Contracts;
-using Data.Utils;
-using Logic;
+using Grpc.Core;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 using Presentation;
 using Presentation.UIBuilder;
+using ProtoBuf.Grpc.Client;
+using SharedLib.Lodging;
 
 namespace FirstExam.Extensions
 {
     public static class ServiceCollectionExtensions
     {
-        public static void AddDataDependencies(this IServiceCollection services)
+        public static void AddGrpcDependencies(this IServiceCollection services)
         {
-            services.AddSingleton(_ => new JsonSerializerSettings
-            {
-                TypeNameHandling = TypeNameHandling.Auto,
-                Culture          = CultureInfo.InvariantCulture,
-                Formatting       = Formatting.Indented
-            });
-            services.AddScoped<IFileUpdater, JsonFileChannel>();
-            services.AddScoped<IFileContentMapper, JsonFileChannel>();
-            services.AddScoped<ILodgingRepository, JsonLodgingRepository>();
-        }
-
-        public static void AddLogicDependencies(this IServiceCollection services)
-        {
-            services.AddScoped<LodgingService>();
+            const string url     = "localhost:3000";
+            var          channel = new Channel(url, ChannelCredentials.Insecure);
+            services.AddSingleton(_ => channel.CreateGrpcService<ILodgingController>());
         }
 
         public static void AddPresentationDependencies(this IServiceCollection services)

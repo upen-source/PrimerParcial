@@ -2,34 +2,39 @@
 using System.Globalization;
 using System.Linq;
 using Entities;
-using Entities.Factories;
 using Presentation.Exceptions;
 using Presentation.Filters;
 using Presentation.UIBuilder;
 using Presentation.Utils;
+using SharedLib.Lodging;
 
 namespace Presentation
 {
     public class LodgingRegistrationMenu
     {
         private readonly BoxBuilder _boxBuilder;
-        private readonly string[]   _validGuestTypes = { "particular", "miembro", "premium" };
+
+        private readonly string[] _validGuestTypes = { "particular", "miembro", "premium" };
+
+        public LodgingRequest CreateLodgingFromInput()
+        {
+            string       type         = AskGuestType();
+            RoomCapacity roomCapacity = AskRoomCapacity();
+
+            var lodging = new LodgingRequest
+            {
+                Type         = type,
+                RoomCapacity = roomCapacity.AsString(),
+                PeopleAmount = AskPeopleAmount(roomCapacity),
+                EntryDate    = AskDate("Fecha de ingreso: "),
+                ExitDate     = AskDate("Fecha de salida: ")
+            };
+            return lodging;
+        }
 
         public LodgingRegistrationMenu(BoxBuilder boxBuilder)
         {
             _boxBuilder = boxBuilder;
-        }
-
-        public Lodging CreateLodgingFromInput()
-        {
-            string  guestType = AskGuestType();
-            Lodging lodging   = LodgingFactory.CreateLodging(guestType);
-
-            lodging.RoomCapacity = AskRoomCapacity();
-            lodging.PeopleAmount = AskPeopleAmount(lodging.RoomCapacity);
-            lodging.EntryDate    = AskDate("Fecha de ingreso: ");
-            lodging.ExitDate     = AskDate("Fecha de salida: ");
-            return lodging;
         }
 
         [RepeatOnException]
@@ -79,7 +84,8 @@ namespace Presentation
         {
             int max   = roomCapacity.MaxCapacity();
             var range = new ARange(1, max);
-            int peopleAmount = ConsoleReader.ReadFormattedData($"Cantidad de huespedes (max {max}): ",
+            int peopleAmount = ConsoleReader.ReadFormattedData(
+                $"Cantidad de huespedes (max {max}): ",
                 Convert.ToInt32, range);
             return peopleAmount;
         }

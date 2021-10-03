@@ -3,27 +3,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Entities;
-using Logic;
 using Microsoft.Extensions.Hosting;
 using Presentation.Filters;
 using Presentation.UIBuilder;
 using Presentation.Utils;
+using SharedLib.Lodging;
 
 namespace Presentation
 {
     public class ConsoleApp : IHostedService
     {
         private readonly BoxBuilder              _boxBuilder;
-        private readonly LodgingService          _lodgingService;
         private readonly LodgingRegistrationMenu _lodgingRegistration;
+        private readonly ILodgingController      _lodgingController;
 
-        public ConsoleApp(BoxBuilder boxBuilder, LodgingService lodgingService,
-            LodgingRegistrationMenu lodgingRegistration)
+        public ConsoleApp(BoxBuilder boxBuilder, LodgingRegistrationMenu lodgingRegistration, ILodgingController lodgingController)
         {
             _boxBuilder          = boxBuilder;
-            _lodgingService      = lodgingService;
             _lodgingRegistration = lodgingRegistration;
+            _lodgingController   = lodgingController;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
@@ -73,8 +71,8 @@ namespace Presentation
         [DisplayExceptionForUser]
         private async Task RegisterNewLodging(CancellationToken cancellationToken)
         {
-            Lodging lodging = _lodgingRegistration.CreateLodgingFromInput();
-            await _lodgingService.AddLodging(lodging, cancellationToken);
+            LodgingRequest lodging = _lodgingRegistration.CreateLodgingFromInput();
+            await _lodgingController.AddLodging(lodging, cancellationToken);
             Console.WriteLine("\n\nRegistrado.\n");
             Console.WriteLine(lodging);
         }
@@ -82,7 +80,7 @@ namespace Presentation
         [DisplayExceptionForUser]
         private async Task ShowAllLodging(CancellationToken cancellationToken)
         {
-            IEnumerable<Lodging> lodgings = await _lodgingService.GetAllLodging(cancellationToken);
+            IEnumerable<LodgingReply> lodgings = await _lodgingController.GetAllLodging(cancellationToken);
             lodgings.ToList().ForEach(Console.WriteLine);
         }
 
@@ -93,7 +91,7 @@ namespace Presentation
             await ShowAllLodging(cancellationToken);
             Console.WriteLine("\n\nBorrar liquidación");
             int id = ConsoleReader.ReadFormattedData("Ingrese el id: ", Convert.ToInt32);
-            await _lodgingService.DeleteById(id, cancellationToken);
+            await _lodgingController.DeleteById(id, cancellationToken);
             Console.WriteLine("Datos actualizados");
             await ShowAllLodging(cancellationToken);
         }

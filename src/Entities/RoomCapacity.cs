@@ -19,7 +19,7 @@
             _ => 0
         };
 
-        public static string GetString(this RoomCapacity roomCapacity) => roomCapacity switch
+        public static string AsString(this RoomCapacity roomCapacity) => roomCapacity switch
         {
             RoomCapacity.Familiar => "Familiar",
             RoomCapacity.Simple => "Sencilla",

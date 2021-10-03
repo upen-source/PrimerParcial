@@ -16,8 +16,7 @@ namespace FirstExam
 
         private static void InjectDependencies(IServiceCollection services)
         {
-            services.AddDataDependencies();
-            services.AddLogicDependencies();
+            services.AddGrpcDependencies();
             services.AddPresentationDependencies();
         }
     }
